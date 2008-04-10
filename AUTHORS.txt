@@ -1,0 +1,5 @@
+Jeff Mesnil::    {jmesnil@gmail.com}[mailto:jmesnil@gmail.com] --
+                 http://jmesnil.net/weblog/
+Aaron Batalion:: {aaron.batalion@gmail.com}[mailto:aaron.batalion@gmail.com] --
+                 http://revolutiononrails.blogspot.com/
+Skaar::          {skaar@waste.org}[mailto:skaar@waste.org]
