@@ -6,7 +6,7 @@ require "rubygems"
 
 dir     = File.dirname(__FILE__)
 lib     = File.join(dir, "lib", "jmx4r.rb")
-version = "0.0.4"
+version = "0.0.5"
 
 task :default => [:test]
 
@@ -38,7 +38,7 @@ spec = Gem::Specification.new do |spec|
   spec.summary  = "jmx4r is a JMX library for JRuby"
   spec.files    = Dir.glob("{examples,lib,test}/**/*.rb") + ["Rakefile"]
 
-  spec.test_suite_file  =  "test/ts_all.rb"
+  spec.test_files       =  "test/ts_all.rb"
   spec.has_rdoc         =  true
   spec.extra_rdoc_files =  %w{README.txt LICENSE.txt}
   spec.rdoc_options     << '--title' << 'jmx4r Documentation' <<
