@@ -110,6 +110,10 @@ module JMX
     #
     # [:host]        the host of the MBean server (defaults to "localhost")
     # [:port]        the port of the MBean server (defaults to 3000)
+    # [:url]         the url of the MBean server.
+    #                No default.
+    #                if the url is specified, the host & port parameters are
+    #                not taken into account
     # [:username]    the name of the user (if the MBean server requires authentication).
     #                No default
     # [:password]    the password of the user (if the MBean server requires authentication).
@@ -125,7 +129,9 @@ module JMX
       password = args[:password]
       credentials = args[:credentials]
       
-      url = "service:jmx:rmi:///jndi/rmi://#{host}:#{port}/jmxrmi"
+      # host & port are not taken into account if url is set (see issue #7)
+      standard_url = "service:jmx:rmi:///jndi/rmi://#{host}:#{port}/jmxrmi"
+      url = args[:url] || standard_url
       
       unless credentials
         if !username.nil? and username.length > 0

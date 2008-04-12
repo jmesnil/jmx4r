@@ -39,4 +39,27 @@ class TestConnection < Test::Unit::TestCase
       JConsole::stop 3001
     end
   end
+
+  def test_establish_connection_with_custom_url
+    begin
+      JConsole::start :port => 3001
+      url = "service:jmx:rmi:///jndi/rmi://localhost:3001/jmxrmi"
+      JMX::MBean.establish_connection :url => url
+    ensure
+      JConsole::stop 3001
+    end
+  end
+
+  def test_establish_connection_with_custom_url_overrides_host_and_port
+    begin
+      JConsole::start :port => 3001
+      good_url = "service:jmx:rmi:///jndi/rmi://localhost:3001/jmxrmi"
+      bad_port = 3000
+      # specifying a :url discards the :port & :host parameters
+      JMX::MBean.establish_connection :port => bad_port, :url => good_url
+    ensure
+      JConsole::stop 3001
+    end
+  end
+
 end
