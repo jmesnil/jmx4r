@@ -36,9 +36,9 @@ EOCMD
     if pwd_file and access_file
       cmd << " -J-Dcom.sun.management.jmxremote.password.file=#{pwd_file}" 
       cmd << " -J-Dcom.sun.management.jmxremote.access.file=#{access_file}"
-    end 
+    end
     Thread.start { system cmd }
-    sleep 4
+    sleep 1
   end
 
   # Stop an instance of JConsole (by killing its process)
@@ -48,7 +48,7 @@ EOCMD
   def JConsole.stop(port=3000)
     jconsole_pid = `ps a -w -o pid,command | grep -w jconsole | grep port=#{port} | grep -v grep | grep -v ruby | cut -c -5`
     `kill #{jconsole_pid}` if jconsole_pid != ""
-    sleep 3
+    sleep 1
   end
 end
 
