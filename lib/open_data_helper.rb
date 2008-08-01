@@ -28,3 +28,13 @@ JavaUtilities.extend_proxy('javax.management.openmbean.CompositeDataSupport') do
     self.get key
   end
 end
+
+JavaUtilities.extend_proxy('javax.management.openmbean.TabularDataSupport') do
+  include Enumerable
+  def each
+    self.values.each do |value|
+      yield value
+    end
+    self
+  end
+end
