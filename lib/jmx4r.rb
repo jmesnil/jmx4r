@@ -16,6 +16,7 @@ end
 
 module JMX
   require 'open_data_helper'
+  require 'objectname_helper'
   require 'jruby'
 
   class MBean
