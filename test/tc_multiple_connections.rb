@@ -16,7 +16,6 @@ class TestMultipleConnections < Test::Unit::TestCase
 
   def teardown
     @ports.each do |port| 
-      JMX::MBean.remove_connection :port => port
       JConsole::stop port 
     end
   end
@@ -36,7 +35,7 @@ class TestMultipleConnections < Test::Unit::TestCase
   end
 
   def test_same_connection
-    mbsc = JMX::MBean.establish_connection :port => @ports[0]
+    mbsc = JMX::MBean.create_connection :port => @ports[0]
 
     delegate_1 = JMX::MBean.find_by_name @delegate_on, :connection => mbsc
     delegate_2 = JMX::MBean.find_by_name @delegate_on, :connection => mbsc
@@ -61,6 +60,7 @@ class TestMultipleConnections < Test::Unit::TestCase
     delegate_2 = JMX::MBean.find_by_name @delegate_on
 
     assert_equal delegate_1.m_bean_server_id, delegate_2.m_bean_server_id
+    JMX::MBean.remove_connection
   end
 
 end

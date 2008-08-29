@@ -6,6 +6,7 @@ require "jmx4r"
 require "jconsole"
 
 class TestConnection < Test::Unit::TestCase
+
   def teardown
     JMX::MBean.remove_connection
   end
@@ -25,7 +26,21 @@ class TestConnection < Test::Unit::TestCase
   def test_establish_connection
     begin
       JConsole::start
-      JMX::MBean.establish_connection
+      connection = JMX::MBean.establish_connection
+      assert(connection.getMBeanCount > 0)
+    ensure
+      JConsole::stop
+    end
+  end
+
+  def test_remove_connection
+    begin
+      JConsole::start
+      connection = JMX::MBean.establish_connection
+      JMX::MBean.remove_connection
+      assert_raise(NativeException) {
+        connection.getMBeanCount
+      }
     ensure
       JConsole::stop
     end

@@ -19,6 +19,31 @@ module JMX
   require 'objectname_helper'
   require 'jruby'
 
+  class MBeanServerConnectionProxy
+    attr_reader :connector
+
+    # Adds a connector attribute to Java's native MBeanServerConnection class.
+    #
+    # The connector attribute can be used to manage the connection (e.g, to close it).
+    # Why this isn't included in the native MBeanServerConnection class is beyond me.
+    #
+    # connector:: JMXConnector instance as returned by JMXConnectorFactory.connect.
+    def initialize(connector)
+      @connector = connector
+      @connection = connector.getMBeanServerConnection
+    end
+
+    # Close the connection (an unfortunate omission from the MBeanServerConnection class, imho)
+    def close
+      @connector.close
+    end
+
+    # Forward all other method messages to the underlying MBeanServerConnection instance.
+    def method_missing(method, *args, &block)
+      @connection.send method, *args, &block
+    end
+  end
+
   class MBean
     include_class 'java.util.HashMap'
     include_class 'javax.management.Attribute'
@@ -28,31 +53,31 @@ module JMX
     include_class 'javax.management.remote.JMXServiceURL'
     JThread = java.lang.Thread
 
-    attr_reader :object_name, :operations, :attributes
+    attr_reader :object_name, :operations, :attributes, :connection
 
     # Creates a new MBean.
     #
     # object_name:: a string corresponding to a valid ObjectName
-    # mbsc::        a connection to a MBean server. If none is passed, 
+    # connection::  a connection to a MBean server. If none is passed,
     #               use the global connection created by 
     #               MBean.establish_connection
-    def initialize(object_name, mbsc=nil)
-      @mbsc = mbsc || @@mbsc
+    def initialize(object_name, connection=nil)
+      @connection = connection || @@connection
       @object_name = object_name
-      info = @mbsc.getMBeanInfo @object_name
+      info = @connection.getMBeanInfo @object_name
       @attributes = Hash.new
       info.attributes.each do | mbean_attr |
         @attributes[mbean_attr.name.snake_case] = mbean_attr.name
         self.class.instance_eval do 
           define_method mbean_attr.name.snake_case do
-            @mbsc.getAttribute @object_name, "#{mbean_attr.name}"
+            @connection.getAttribute @object_name, "#{mbean_attr.name}"
           end
         end
         if mbean_attr.isWritable
           self.class.instance_eval do
             define_method "#{mbean_attr.name.snake_case}=" do |value| 
               attr = Attribute.new mbean_attr.name, value
-              @mbsc.setAttribute @object_name, attr
+              @connection.setAttribute @object_name, attr
             end
           end
         end
@@ -67,7 +92,7 @@ module JMX
     def method_missing(method, *args, &block) #:nodoc:
       if @operations.keys.include?(method.to_s)
         op_name, param_types = @operations[method.to_s]
-        @mbsc.invoke @object_name,
+        @connection.invoke @object_name,
         op_name,
         args.to_java(:Object),
         param_types.to_java(:String)
@@ -76,7 +101,7 @@ module JMX
       end
     end
 
-    @@mbsc = nil
+    @@connection = nil
 
     # establish a connection to a remote MBean server which will
     # be used by all subsequent MBeans.
@@ -89,19 +114,21 @@ module JMX
     #   JMX::MBean.establish_connection :port => "node23", :port => 1090
     #   JMX::MBean.establish_connection :port => "node23", :username => "jeff", :password => "secret"
     def self.establish_connection(args={})
-      @@mbsc ||= create_connection args
+      @@connection ||= create_connection args
     end
 
     def self.remove_connection(args={})
-      @@mbsc = nil
+      if @@connection
+        @@connection.close rescue nil
+      end
+      @@connection = nil
     end
 
     def self.connection(args={})
       if args.has_key? :host or args.has_key? :port
         return create_connection(args)
       else
-        MBean.establish_connection(args) unless @@mbsc
-        return @@mbsc  
+        @@connection ||= MBean.establish_connection(args)
       end
     end
 
@@ -153,7 +180,7 @@ module JMX
         JThread.current_thread.context_class_loader = JRuby.runtime.getJRubyClassLoader
         
         connector = JMXConnectorFactory::connect JMXServiceURL.new(url), env
-        connector.getMBeanServerConnection
+        MBeanServerConnectionProxy.new connector
       ensure
         # ... and we reset the previous context class loader
         JThread.current_thread.context_class_loader = context_class_loader
@@ -173,17 +200,17 @@ module JMX
     #
     def self.find_all_by_name(name, args={})
       object_name = ObjectName.new(name)
-      mbsc = args[:connection] || MBean.connection(args)
-      object_names = mbsc.queryNames(object_name, nil)
-      object_names.map { |on| MBean.new(on, mbsc) }
+      connection = args[:connection] || MBean.connection(args)
+      object_names = connection.queryNames(object_name, nil)
+      object_names.map { |on| MBean.new(on, connection) }
     end
 
     # Same as #find_all_by_name but the ObjectName passed in parameter
     # can not be a pattern.
     # Only one single MBean is returned.
     def self.find_by_name(name, args={})
-      mbsc = args[:connection] || MBean.connection(args)
-      MBean.new ObjectName.new(name), mbsc
+      connection = args[:connection] || MBean.connection(args)
+      MBean.new ObjectName.new(name), connection
     end
   end
 end
