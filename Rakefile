@@ -17,9 +17,9 @@ Rake::TestTask.new do |test|
 end
 
 Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_files.include( "README.txt", "LICENSE.txt", "AUTHORS.txt", 
+  rdoc.rdoc_files.include( "README.rdoc", "LICENSE.txt", "AUTHORS.txt", 
                            "lib/" )
-  rdoc.main     = "README.txt"
+  rdoc.main     = "README.rdoc"
   rdoc.rdoc_dir = "doc/html"
   rdoc.title    = "jmx4r Documentation"
   rdoc.options << "-S"
@@ -40,9 +40,9 @@ spec = Gem::Specification.new do |spec|
 
   spec.test_files       =  "test/ts_all.rb"
   spec.has_rdoc         =  true
-  spec.extra_rdoc_files =  %w{README.txt LICENSE.txt}
+  spec.extra_rdoc_files =  %w{README.rdoc LICENSE.txt}
   spec.rdoc_options     << '--title' << 'jmx4r Documentation' <<
-                           '--main'  << 'README.txt'
+                           '--main'  << 'README.rdoc'
 
   spec.require_path      = 'lib'
 
