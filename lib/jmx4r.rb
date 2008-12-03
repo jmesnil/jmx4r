@@ -15,6 +15,7 @@ class String
 end
 
 module JMX
+  require 'dynamic_mbean'
   require 'open_data_helper'
   require 'objectname_helper'
   require 'jruby'

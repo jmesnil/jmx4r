@@ -7,3 +7,5 @@ require "tc_auth"
 require "tc_multiple_connections"
 require "tc_attributes"
 require "tc_composite_data"
+require "tc_dynamic_mbean"
+
