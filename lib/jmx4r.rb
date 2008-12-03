@@ -212,5 +212,33 @@ module JMX
       connection = args[:connection] || MBean.connection(args)
       MBean.new ObjectName.new(name), connection
     end
+
+    def self.pretty_print (object_name, args={})
+      connection = args[:connection] || MBean.connection(args)
+      info = connection.getMBeanInfo ObjectName.new(object_name)
+      puts "object_name: #{object_name}"
+      puts "class: #{info.class_name}"
+      puts "description: #{info.description}"
+      puts "operations:"
+      info.operations.each do | op |
+        puts "  #{op.name}"
+        op.signature.each do | param |
+          puts "    #{param.name} (#{param.type} #{param.description})"
+        end
+        puts "    ----"
+        puts "    description: #{op.description}"
+        puts "    return_type: #{op.return_type}"
+        puts "    impact: #{op.impact}"
+      end
+      puts "attributes:"
+      info.attributes.each do | attr |
+        puts "  #{attr.name}"
+        puts "    description: #{attr.description}"
+        puts "    type: #{attr.type}"
+        puts "    readable: #{attr.readable}"
+        puts "    writable: #{attr.writable}"
+        puts "    is: #{attr.is}"
+      end
+    end
   end
 end
