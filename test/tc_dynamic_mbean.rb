@@ -17,6 +17,7 @@ class TestDynamicMBean < Test::Unit::TestCase
     rw_attribute :list_attr, :list, "a List attribute"
     rw_attribute :map_attr, :map, "a Map attribute"
     rw_attribute :set_attr, :set, "a Set attribute"
+    rw_attribute :boolean_attr, :boolean, "a Boolean attribute"
   end
 
   def test_attribute_types
@@ -45,6 +46,9 @@ class TestDynamicMBean < Test::Unit::TestCase
 
     mbean.map_attr = { "a" => 1, "b" => 2}
     assert_equal({ "a" => 1, "b" => 2}.to_a, mbean.map_attr.to_a)
+
+    mbean.boolean_attr = true
+    assert_equal(true, mbean.boolean_attr)
   end
 
   class OperationInvocationMBean < DynamicMBean

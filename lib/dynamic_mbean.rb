@@ -13,6 +13,7 @@ module JMX
     # Current list of types we understand  If it's not in this list we are
     # assuming that we are going to convert to a java.object
     SIMPLE_TYPES = {
+      :boolean => ['java.lang.Boolean', lambda {|param| param}],
       :int => ['java.lang.Integer', lambda {|param| param.to_i}],
       :list => ['java.util.ArrayList', lambda {|param| param.to_a}],
       :long => ['java.lang.Long', lambda {|param| param.to_i}],
