@@ -28,22 +28,22 @@ class TestDynamicMBean < Test::Unit::TestCase
     mbean.string_attr = "test"
     assert_equal("test", mbean.string_attr)
 
-    mbean.int_attr = 23;
+    mbean.int_attr = 23
     assert_equal(23, mbean.int_attr)
 
-    mbean.long_attr = 33;
+    mbean.long_attr = 33
     assert_equal(33, mbean.long_attr)
 
-    mbean.float_attr = 91.0;
+    mbean.float_attr = 91.0
     assert_equal(91.0, mbean.float_attr)
 
-    mbean.list_attr = [1, 2, 3];
+    mbean.list_attr = [1, 2, 3]
     assert_equal([1, 2, 3], mbean.list_attr.to_a)
 
-    mbean.set_attr = [1, 2, 3];
+    mbean.set_attr = [1, 2, 3]
     assert_equal([1, 2, 3].sort, mbean.list_attr.to_a.sort)
 
-    mbean.map_attr = { "a" => 1, "b" => 2};
+    mbean.map_attr = { "a" => 1, "b" => 2}
     assert_equal({ "a" => 1, "b" => 2}.to_a, mbean.map_attr.to_a)
   end
 
