@@ -14,12 +14,12 @@ module JMX
     # assuming that we are going to convert to a java.object
     SIMPLE_TYPES = {
       :int => ['java.lang.Integer', lambda {|param| param.to_i}],
-      :list => ['java.util.List', lambda {|param| param.to_a}],
+      :list => ['java.util.ArrayList', lambda {|param| param.to_a}],
       :long => ['java.lang.Long', lambda {|param| param.to_i}],
       :float => ['java.lang.Float', lambda {|param| param.to_f}],
-      :map => ['java.util.Map', lambda {|param| param}],
-      :set => ['java.util.Set', lambda {|param| param}],
-      :string => ['java.lang.String', lambda {|param| "'#{param.to_s}'"}],
+      :map => ['java.util.HashMap', lambda {|param| param}],
+      :set => ['java.util.HashSet', lambda {|param| param}],
+      :string => ['java.lang.String', lambda {|param| "#{param.to_s}"}],
       :void => ['java.lang.Void', lambda {|param| nil}]
     }
 
@@ -96,7 +96,7 @@ end
 # (it invokes the attr_accessor/attr_reader/attr_writer ruby helpers) to create ruby methods
 # like: user_name= and username.  So in your ruby code you can treat the attributes
 # as "regular" ruby accessors
-class RubyDynamicMBean
+class DynamicMBean
   import javax.management.MBeanOperationInfo
   import javax.management.MBeanAttributeInfo
   import javax.management.DynamicMBean
@@ -150,7 +150,7 @@ class RubyDynamicMBean
 
     define_method("jmx_set_#{name.to_s.downcase}") do |value|
       blck = to_ruby(type)
-      eval "@#{name.to_s} = #{blck.call(value)}"
+      send "#{name.to_s}=", blck.call(value)
     end
   end
 
