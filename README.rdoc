@@ -5,11 +5,16 @@ to manage remote Java applications (e.g. JBoss[http://www.jboss.org],
 Tomcat[http://tomcat.apache.org/]) using 
 JMX[http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/].
 
-== Install
+jmx4r helps to manage Java applications using JMX in a simple and powerful way:
+* no need to depend on the Java interfaces of the MBean in your management code. This means <em>less deployment issues</em>
+* Thanks to Ruby metaprogramming toolset, you can <em>treat your MBeans as simple objects</em> and jmx4r hides all the complexity to map them to the javax.management API for you
+* you can manage your own JVM (e.g. if you're running a Rails on JRuby application) or a remote JVM in the same way
+
+== Installation
 
   jruby -S gem install jmx4r
 
-== Use
+== Usage
 
   # To trigger a garbage collection on a Java application:
   
@@ -24,12 +29,12 @@ JMX[http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/].
   # trigger a Garbage Collection
   memory.gc
 
-== Learn
+== Help
 
 * Wiki[http://github.com/jmesnil/jmx4r/wikis]
 * RDoc[http://jmx4r.rubyforge.org/doc/]
  
-== Contribute
+== Source Code
 
   git clone git://github.com/jmesnil/jmx4r.git
 
