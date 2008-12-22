@@ -132,10 +132,16 @@ class DynamicMBean
   # see the +JavaSimpleTypes+ module for more information about acceptable types
   # usage:
   # rw_attribute :attribute_name, :string, "Description displayed in a JMX console"
-  #--methods used to create an attribute.  They are modeled on the attrib_accessor
+  #
+  # The name and type parameters are mandatory
+  # The description parameter is optional (defaults to the same value than the env: ruby: No such file or directory
+  # name parameter in that case)
+  # --
+  # methods used to create an attribute.  They are modeled on the attrib_accessor
   # patterns of creating getters and setters in ruby
   #++
-  def self.rw_attribute(name, type, description)
+  def self.rw_attribute(name, type, description=nil)
+    description ||= name.to_s
     attributes << JMX::Attribute.new(name, type, description, true, true).to_jmx
     attr_accessor name
     #create a "java" oriented accessor method
