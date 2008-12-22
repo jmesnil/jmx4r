@@ -14,6 +14,7 @@ module JMX
     # assuming that we are going to convert to a java.object
     SIMPLE_TYPES = {
       :boolean => ['java.lang.Boolean', lambda {|param| param}],
+      :byte => ['java.lang.Byte', lambda {|param| param.to_i}],
       :int => ['java.lang.Integer', lambda {|param| param.to_i}],
       :list => ['java.util.ArrayList', lambda {|param| param.to_a}],
       :long => ['java.lang.Long', lambda {|param| param.to_i}],

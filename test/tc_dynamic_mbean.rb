@@ -11,6 +11,7 @@ class TestDynamicMBean < Test::Unit::TestCase
 
   class AttributeTypesMBean < DynamicMBean
     rw_attribute :string_attr, :string, "a String attribute"
+    rw_attribute :byte_attr, :byte, "a Byte attribute"
     rw_attribute :int_attr, :int, "a Integer attribute"
     rw_attribute :long_attr, :long, "a Long attribute"
     rw_attribute :float_attr, :float, "a Float attribute"
@@ -29,6 +30,9 @@ class TestDynamicMBean < Test::Unit::TestCase
     mbean = JMX::MBean.find_by_name "jmx4r:name=AttributeTypesMBean", :connection => mbeanServer
     mbean.string_attr = "test"
     assert_equal("test", mbean.string_attr)
+
+    mbean.byte_attr = 9
+    assert_equal(9, mbean.byte_attr)
 
     mbean.int_attr = 23
     assert_equal(23, mbean.int_attr)
