@@ -14,6 +14,7 @@ class TestDynamicMBean < Test::Unit::TestCase
     rw_attribute :int_attr, :int, "a Integer attribute"
     rw_attribute :long_attr, :long, "a Long attribute"
     rw_attribute :float_attr, :float, "a Float attribute"
+    rw_attribute :double_attr, :double, "a Double attribute"
     rw_attribute :list_attr, :list, "a List attribute"
     rw_attribute :map_attr, :map, "a Map attribute"
     rw_attribute :set_attr, :set, "a Set attribute"
@@ -37,6 +38,9 @@ class TestDynamicMBean < Test::Unit::TestCase
 
     mbean.float_attr = 91.0
     assert_equal(91.0, mbean.float_attr)
+
+    mbean.float_attr = 7.0
+    assert_equal(7.0, mbean.float_attr)
 
     mbean.list_attr = [1, 2, 3]
     assert_equal([1, 2, 3], mbean.list_attr.to_a)

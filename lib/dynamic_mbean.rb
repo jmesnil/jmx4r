@@ -18,9 +18,10 @@ module JMX
       :list => ['java.util.ArrayList', lambda {|param| param.to_a}],
       :long => ['java.lang.Long', lambda {|param| param.to_i}],
       :float => ['java.lang.Float', lambda {|param| param.to_f}],
+      :double => ['java.lang.Double', lambda {|param| param.to_f}],
       :map => ['java.util.HashMap', lambda {|param| param}],
       :set => ['java.util.HashSet', lambda {|param| param}],
-      :string => ['java.lang.String', lambda {|param| "#{param.to_s}"}],
+      :string => ['java.lang.String', lambda {|param| param.to_s}],
       :void => ['java.lang.Void', lambda {|param| nil}]
     }
 
