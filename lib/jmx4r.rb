@@ -46,6 +46,7 @@ module JMX
 
   class MBean
     include_class 'java.util.HashMap'
+    include_class 'javax.naming.Context'
     include_class 'javax.management.Attribute'
     include_class 'javax.management.ObjectName'
     include_class 'javax.management.remote.JMXConnector'
@@ -149,6 +150,8 @@ module JMX
     # [:credentials] custom credentials (if the MBean server requires authentication).
     #                No default. It has precedence over :username and :password (i.e. if
     #                :credentials is specified, :username & :password are ignored)   
+    # [:provider_package] use to fill the JMXConnectorFactory::PROTOCOL_PROVIDER_PACKAGES
+    #                No default
     #
     def self.create_connection(args={})
       host= args[:host] || "localhost"
@@ -156,6 +159,7 @@ module JMX
       username = args[:username]
       password = args[:password]
       credentials = args[:credentials]
+      provider_package = args[:provider_package]
       
       # host & port are not taken into account if url is set (see issue #7)
       standard_url = "service:jmx:rmi:///jndi/rmi://#{host}:#{port}/jmxrmi"
@@ -170,6 +174,12 @@ module JMX
       
       env = HashMap.new
       env.put(JMXConnector::CREDENTIALS, credentials) if credentials
+      # only fill the Context and JMXConnectorFactory properties if provider_package is set
+      if provider_package
+        env.put(Context::SECURITY_PRINCIPAL, username) if username
+        env.put(Context::SECURITY_CREDENTIALS, password) if password
+        env.put(JMXConnectorFactory::PROTOCOL_PROVIDER_PACKAGES, provider_package)
+      end
 
       # the context class loader is set to JRuby's classloader when
       # creating the JMX Connection so that classes loaded using 

@@ -5,3 +5,4 @@ Aaron Batalion:: {aaron.batalion@gmail.com}[mailto:aaron.batalion@gmail.com] --
 Skaar::          {skaar@waste.org}[mailto:skaar@waste.org]
 Clay McClure::   {clay@daemons.net}[mailto:clay@daemons.net] --
                  http://daemons.net/~clay
+Michael Nadel::  {michael.nadel@gmail.com}[mailto:michael.nadel@gmail.com]
