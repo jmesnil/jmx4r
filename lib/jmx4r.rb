@@ -135,23 +135,29 @@ module JMX
 
     # Create a connection to a remote MBean server.
     # 
-    # The args accepts 4 keys:
+    # The args accepts the following keys:
     #
-    # [:host]        the host of the MBean server (defaults to "localhost")
-    # [:port]        the port of the MBean server (defaults to 3000)
-    # [:url]         the url of the MBean server.
-    #                No default.
-    #                if the url is specified, the host & port parameters are
-    #                not taken into account
-    # [:username]    the name of the user (if the MBean server requires authentication).
-    #                No default
-    # [:password]    the password of the user (if the MBean server requires authentication).
-    #                No default
-    # [:credentials] custom credentials (if the MBean server requires authentication).
-    #                No default. It has precedence over :username and :password (i.e. if
-    #                :credentials is specified, :username & :password are ignored)   
-    # [:provider_package] use to fill the JMXConnectorFactory::PROTOCOL_PROVIDER_PACKAGES
-    #                No default
+    # [:host]             the host of the MBean server (defaults to "localhost")
+    #
+    # [:port]             the port of the MBean server (defaults to 3000)
+    #
+    # [:url]              the url of the MBean server.
+    #                     No default.
+    #                     if the url is specified, the host & port parameters are
+    #                     not taken into account
+    #
+    # [:username]         the name of the user (if the MBean server requires authentication).
+    #                     No default
+    #
+    # [:password]         the password of the user (if the MBean server requires authentication).
+    #                     No default
+    #
+    # [:credentials]      custom credentials (if the MBean server requires authentication).
+    #                     No default. It has precedence over :username and :password (i.e. if
+    #                     :credentials is specified, :username & :password are ignored)   
+    #
+    # [:provider_package] use to fill the JMXConnectorFactory::PROTOCOL_PROVIDER_PACKAGES.
+    #                     No default
     #
     def self.create_connection(args={})
       host= args[:host] || "localhost"
