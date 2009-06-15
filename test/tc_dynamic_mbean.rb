@@ -53,7 +53,7 @@ class TestDynamicMBean < Test::Unit::TestCase
     assert_equal([1, 2, 3].sort, mbean.list_attr.to_a.sort)
 
     mbean.map_attr = { "a" => 1, "b" => 2}
-    assert_equal({ "a" => 1, "b" => 2}.to_a, mbean.map_attr.to_a)
+    assert_equal({ "a" => 1, "b" => 2}.to_a.sort, mbean.map_attr.to_a.sort)
 
     mbean.boolean_attr = true
     assert_equal(true, mbean.boolean_attr)
