@@ -38,7 +38,7 @@ EOCMD
       cmd << " -J-Dcom.sun.management.jmxremote.access.file=#{access_file}"
     end
     Thread.start { system cmd }
-    sleep 1
+    sleep 3
   end
 
   # Stop an instance of JConsole (by killing its process)

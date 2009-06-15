@@ -6,9 +6,10 @@ require "jmx4r"
 require "jconsole"
 
 class TestCompositeData < Test::Unit::TestCase
+  import java.lang.management.ManagementFactory
+
   def setup
-    JConsole::start
-    memory = JMX::MBean.find_by_name "java.lang:type=Memory"
+    memory = JMX::MBean.find_by_name "java.lang:type=Memory", :connection => ManagementFactory.platform_mbean_server
     # heap_memory_usage is a CompositeData
     @heap = memory.heap_memory_usage
   end
@@ -16,7 +17,6 @@ class TestCompositeData < Test::Unit::TestCase
   def teardown
     @heap = nil
     JMX::MBean.remove_connection
-    JConsole::stop
   end
   
   # use #map to check that CompositeData includes Enumerable

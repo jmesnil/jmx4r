@@ -6,14 +6,14 @@ require "jmx4r"
 require "jconsole"
 
 class TestAttribute < Test::Unit::TestCase
+  import java.lang.management.ManagementFactory
+
   def setup
-    JConsole::start
-    @memory = JMX::MBean.find_by_name "java.lang:type=Memory"
+    @memory = JMX::MBean.find_by_name "java.lang:type=Memory", :connection => ManagementFactory.platform_mbean_server
   end
 
   def teardown
     JMX::MBean.remove_connection
-    JConsole::stop
   end
 
   def test_unknwown_attribute
@@ -28,6 +28,7 @@ class TestAttribute < Test::Unit::TestCase
     assert_equal false, @memory.verbose
     @memory.verbose = true
     assert_equal true, @memory.verbose
+    @memory.verbose = false
   end
 
   def test_non_writable_attribute
