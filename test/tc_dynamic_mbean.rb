@@ -9,7 +9,7 @@ class TestDynamicMBean < Test::Unit::TestCase
   import java.lang.management.ManagementFactory
   import javax.management.ObjectName
 
-  class AttributeTypesMBean < DynamicMBean
+  class AttributeTypesMBean < JMX::DynamicMBean
     rw_attribute :string_attr, :string, "a String attribute"
     rw_attribute :byte_attr, :byte, "a Byte attribute"
     rw_attribute :int_attr, :int, "a Integer attribute"
@@ -59,7 +59,7 @@ class TestDynamicMBean < Test::Unit::TestCase
     assert_equal(true, mbean.boolean_attr)
   end
 
-  class OperationInvocationMBean < DynamicMBean
+  class OperationInvocationMBean < JMX::DynamicMBean
     operation "reverse the string passed in parameter"
     parameter :string, "arg", "a String to reverse"
     returns :string
