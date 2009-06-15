@@ -77,10 +77,10 @@ module JMX
   end
 end
 
-#  The Ruby-Java JMX utilities work throughout the DynamicMBean concept.  Creators of Ruby based MBeans must inherit this
-# class (<tt>RubyDynamicMBean</tt>) in their own bean classes and then register them with a JMX mbean server.
+# Creators of Ruby based MBeans must inherit this
+# class (<tt>DynamicMBean</tt>) in their own bean classes and then register them with a JMX mbean server.
 #  Here is an example:
-#       class MyMBean < RuybDynamicMBean
+#       class MyMBean < DynamicMBean
 #         rw_attribute :status, :string, "Status information for this process"
 #
 #         operation "Shutdown this process"
@@ -198,7 +198,8 @@ class DynamicMBean
   end
 
   # Use the operation method to declare the start of an operation
-  # It takes as an argument the description for the operation
+  # It takes as an optional argument the description for the operation
+  # Example:
   #     operation "Used to start the service"
   #     def start
   #     end
@@ -212,9 +213,12 @@ class DynamicMBean
 
   # Used to declare a parameter (you can declare more than one in succession) that
   # is associated with the currently declared operation.
+  # The type is mandatory, the name and description are optional.
+  # Example:
   #     operation "Used to update the name of a service"
   #     parameter :string, "name", "Set the new name of the service"
-  #     def start
+  #     def start(name)
+  #        ...
   #     end
   def self.parameter(type, name=nil, description=nil)
     Thread.current[:op].parameters << JMX::Parameter.new(type, name, description)
@@ -224,7 +228,8 @@ class DynamicMBean
   #     operation "Used to update the name of a service"
   #     parameter :string, "name", "Set the new name of the service"
   #     returns :void
-  #     def set_name
+  #     def do_stuff
+  #        ...
   #     end
   def self.returns(type)
     Thread.current[:op].return_type = type
