@@ -109,22 +109,26 @@ module JMX
     def self.inherited(cls)
       cls.send(:include, DynamicMBean)
     end
+    
+    def self.mbean_attributes
+      @mbean_attributes ||= {}
+    end
   
     # TODO: preserve any original method_added?
     # TODO: Error handling here when it all goes wrong?
     def self.method_added(name) #:nodoc:
-      return if Thread.current[:op].nil?
-      Thread.current[:op].name = name
-      operations << Thread.current[:op].to_jmx
-      Thread.current[:op] = nil
+      return if self.mbean_attributes[:op].nil?
+      self.mbean_attributes[:op].name = name
+      operations << self.mbean_attributes[:op].to_jmx
+      self.mbean_attributes[:op] = nil
     end
   
     def self.attributes #:nodoc:
-      Thread.current[:attrs] ||= []
+      self.mbean_attributes[:attrs] ||= []
     end
   
     def self.operations #:nodoc:
-      Thread.current[:ops] ||= []
+      self.mbean_attributes[:ops] ||= []
     end
   
     # the <tt>rw_attribute</tt> method is used to declare a JMX read write attribute.
@@ -207,7 +211,7 @@ module JMX
     #++
     def self.operation(description=nil)
       # Wait to error check until method_added so we can know method name
-      Thread.current[:op] = JMX::Operation.new description
+      self.mbean_attributes[:op] = JMX::Operation.new description
     end
   
     # Used to declare a parameter (you can declare more than one in succession) that
@@ -220,7 +224,7 @@ module JMX
     #        ...
     #     end
     def self.parameter(type, name=nil, description=nil)
-      Thread.current[:op].parameters << JMX::Parameter.new(type, name, description)
+      self.mbean_attributes[:op].parameters << JMX::Parameter.new(type, name, description)
     end
   
     # Used to declare the return type of the operation
@@ -231,7 +235,7 @@ module JMX
     #        ...
     #     end
     def self.returns(type)
-      Thread.current[:op].return_type = type
+      self.mbean_attributes[:op].return_type = type
     end
   
     def initialize(description="")
