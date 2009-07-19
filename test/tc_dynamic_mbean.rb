@@ -76,4 +76,53 @@ class TestDynamicMBean < Test::Unit::TestCase
     mbean = JMX::MBean.find_by_name "jmx4r:name=OperationInvocationMBean", :connection => mbeanServer
     assert_equal("oof", mbean.reverse("foo"))
   end
+
+  class Foo < JMX::DynamicMBean
+    rw_attribute :foo_attr, :string
+
+    operation
+    parameter :string
+    returns :string
+    def foo(arg)
+       "foo #{arg}"
+    end
+  end
+
+  class Bar < JMX::DynamicMBean
+    rw_attribute :bar_attr, :string
+
+    operation
+    parameter :string
+    returns :string
+    def bar(arg)
+       "bar #{arg}"
+    end
+  end
+
+  def test_separate_dynamic_beans_have_separate_operations_and_attributes
+     mbean_server = ManagementFactory.platform_mbean_server
+     mbean_server.register_mbean Foo.new, ObjectName.new("jmx4r:name=foo")
+     mbean_server.register_mbean Bar.new, ObjectName.new("jmx4r:name=bar")
+
+     foo_mbean = JMX::MBean.find_by_name "jmx4r:name=foo", :connection => mbean_server
+     assert_equal "foo test", foo_mbean.foo("test")
+     assert_raise(NoMethodError){
+        foo_mbean.bar("test")
+     }
+     foo_mbean.foo_attr = "test"
+     assert_equal "test", foo_mbean.foo_attr
+     assert_raise(NativeException){
+        foo_mbean.bar_attr = "test"
+     }
+     bar_mbean = JMX::MBean.find_by_name "jmx4r:name=bar", :connection => mbean_server
+     assert_equal "bar test", bar_mbean.bar("test")
+     assert_raise(NoMethodError) {
+        bar_mbean.foo("test")
+     }
+     bar_mbean.bar_attr = "test"
+     assert_equal "test", bar_mbean.bar_attr
+     assert_raise(NativeException){
+        bar_mbean.foo_attr = "test"
+     }
+  end
 end
