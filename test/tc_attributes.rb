@@ -34,4 +34,11 @@ class TestAttribute < Test::Unit::TestCase
   def test_non_writable_attribute
     assert_raise(NoMethodError) { @memory.object_pending_finalization_count = -1 }
   end
+
+  def test_non_overlapping_attributes
+    assert_raise(NoMethodError) { @memory.logger_names }
+    logging = JMX::MBean.find_by_name "java.util.logging:type=Logging", :connection => ManagementFactory.platform_mbean_server
+    assert_raise(NoMethodError) { logging.verbose }
+    assert_raise(NoMethodError) { @memory.logger_names }
+  end
 end

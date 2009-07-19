@@ -57,6 +57,13 @@ module JMX
 
     attr_reader :object_name, :operations, :attributes, :connection
 
+    def metaclass; class << self; self; end; end
+    def meta_def name, &blk
+      metaclass.instance_eval do
+          define_method name, &blk
+      end
+    end
+
     # Creates a new MBean.
     #
     # object_name:: a string corresponding to a valid ObjectName
@@ -70,19 +77,6 @@ module JMX
       @attributes = Hash.new
       info.attributes.each do | mbean_attr |
         @attributes[mbean_attr.name.snake_case] = mbean_attr.name
-        self.class.instance_eval do 
-          define_method mbean_attr.name.snake_case do
-            @connection.getAttribute @object_name, "#{mbean_attr.name}"
-          end
-        end
-        if mbean_attr.isWritable
-          self.class.instance_eval do
-            define_method "#{mbean_attr.name.snake_case}=" do |value| 
-              attr = Attribute.new mbean_attr.name, value
-              @connection.setAttribute @object_name, attr
-            end
-          end
-        end
       end
       @operations = Hash.new
       info.operations.each do |mbean_op|
@@ -95,9 +89,9 @@ module JMX
       if @operations.keys.include?(method.to_s)
         op_name, param_types = @operations[method.to_s]
         @connection.invoke @object_name,
-        op_name,
-        args.to_java(:Object),
-        param_types.to_java(:String)
+                           op_name,
+                           args.to_java(:Object),
+                           param_types.to_java(:String)
       else
         super
       end
@@ -219,7 +213,7 @@ module JMX
       object_name = ObjectName.new(name)
       connection = args[:connection] || MBean.connection(args)
       object_names = connection.queryNames(object_name, nil)
-      object_names.map { |on| MBean.new(on, connection) }
+      object_names.map { |on| create_mbean on, connection }
     end
 
     # Same as #find_all_by_name but the ObjectName passed in parameter
@@ -227,7 +221,25 @@ module JMX
     # Only one single MBean is returned.
     def self.find_by_name(name, args={})
       connection = args[:connection] || MBean.connection(args)
-      MBean.new ObjectName.new(name), connection
+      create_mbean ObjectName.new(name), connection
+    end
+
+    def self.create_mbean(object_name, connection)
+      info = connection.getMBeanInfo object_name
+      mbean = MBean.new object_name, connection
+      # define attribute accessor methods for the mbean
+      info.attributes.each do |mbean_attr|
+        mbean.meta_def mbean_attr.name.snake_case do
+          connection.getAttribute object_name, mbean_attr.name
+        end
+        if mbean_attr.isWritable
+          mbean.meta_def "#{mbean_attr.name.snake_case}=" do |value|
+            attribute = Attribute.new mbean_attr.name, value
+            connection.setAttribute object_name, attribute
+          end
+        end
+      end
+      mbean
     end
 
     def self.pretty_print (object_name, args={})

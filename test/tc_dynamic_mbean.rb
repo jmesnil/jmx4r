@@ -111,7 +111,7 @@ class TestDynamicMBean < Test::Unit::TestCase
      }
      foo_mbean.foo_attr = "test"
      assert_equal "test", foo_mbean.foo_attr
-     assert_raise(NativeException){
+     assert_raise(NoMethodError){
         foo_mbean.bar_attr = "test"
      }
      bar_mbean = JMX::MBean.find_by_name "jmx4r:name=bar", :connection => mbean_server
@@ -121,7 +121,7 @@ class TestDynamicMBean < Test::Unit::TestCase
      }
      bar_mbean.bar_attr = "test"
      assert_equal "test", bar_mbean.bar_attr
-     assert_raise(NativeException){
+     assert_raise(NoMethodError){
         bar_mbean.foo_attr = "test"
      }
   end
