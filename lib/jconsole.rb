@@ -12,7 +12,8 @@ module JConsole
   # By default, no authentication is required to connect to it.
   #
   # The args hash accepts 3 keys:
-  # [:port]        the port which will be listens to JMX connections
+  # [:port]        the port which will be listens to JMX connections.
+  #                if the port is 0, jmxrmi port is not published
   # [:pwd_file]    the path to the file containing the authentication credentials
   # [:access_file] the path to the file containing the authorization credentials
   #
@@ -29,13 +30,19 @@ module JConsole
     cmd =<<-EOCMD.split("\n").join(" ")
     jconsole
     -J-Dcom.sun.management.jmxremote 
-    -J-Dcom.sun.management.jmxremote.port=#{port} 
-    -J-Dcom.sun.management.jmxremote.ssl=false 
-    -J-Dcom.sun.management.jmxremote.authenticate=#{!pwd_file.nil?}
-EOCMD
-    if pwd_file and access_file
-      cmd << " -J-Dcom.sun.management.jmxremote.password.file=#{pwd_file}" 
-      cmd << " -J-Dcom.sun.management.jmxremote.access.file=#{access_file}"
+    EOCMD
+
+    if port != 0
+      cmd << <<-EOCMD.split("\n").join(" ")
+      -J-Dcom.sun.management.jmxremote.port=#{port}
+      -J-Dcom.sun.management.jmxremote.ssl=false
+      -J-Dcom.sun.management.jmxremote.authenticate=#{!pwd_file.nil?}
+      EOCMD
+
+      if pwd_file and access_file
+        cmd << " -J-Dcom.sun.management.jmxremote.password.file=#{pwd_file}"
+        cmd << " -J-Dcom.sun.management.jmxremote.access.file=#{access_file}"
+      end
     end
     Thread.start { system cmd }
     sleep 3
@@ -46,7 +53,11 @@ EOCMD
   # By default, it will kill the process corresponding to an instance JConsole with 
   # a port on 3000. Another port can be specified in parameter.
   def JConsole.stop(port=3000)
-    jconsole_pid = `ps a -w -o pid,command | grep -w jconsole | grep port=#{port} | grep -v grep | grep -v ruby | cut -c -5`
+    ps  = "ps a -w -o pid,command | grep -w jconsole"
+    ps << " | grep port=#{port}" if port != 0
+    ps << " | grep -v grep | grep -v ruby | cut -c -5"
+
+    jconsole_pid = `#{ps}`
     `kill #{jconsole_pid}` if jconsole_pid != ""
     sleep 1
   end

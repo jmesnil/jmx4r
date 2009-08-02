@@ -77,4 +77,15 @@ class TestConnection < Test::Unit::TestCase
     end
   end
 
+  def test_establish_connection_local
+    begin
+      JConsole::start :port => 0
+      connection = JMX::MBean.establish_connection \
+        :command => /jconsole/i
+      assert(connection.getMBeanCount > 0)
+    ensure
+      JConsole::stop 0
+    end
+  end
+
 end

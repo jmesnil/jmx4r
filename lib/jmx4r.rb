@@ -111,6 +111,7 @@ module JMX
     # 
     #   JMX::MBean.establish_connection :port => "node23", :port => 1090
     #   JMX::MBean.establish_connection :port => "node23", :username => "jeff", :password => "secret"
+    #   JMX::MBean.establish_connection :command => /jconsole/i
     def self.establish_connection(args={})
       @@connection ||= create_connection args
     end
@@ -143,6 +144,15 @@ module JMX
     #                     if the url is specified, the host & port parameters are
     #                     not taken into account
     #
+    # [:command]          the pattern matches the command line of the local
+    #                     JVM process.
+    #                     (listed as 'local processes' on JConsole).
+    #                     No default.
+    #                     this feature needs a JDK (>=5) installed on the local
+    #                     system.
+    #                     if the command is specified, the host & port or the url
+    #                     parameters are not taken into account
+    #
     # [:username]         the name of the user (if the MBean server requires authentication).
     #                     No default
     #
@@ -164,9 +174,15 @@ module JMX
       credentials = args[:credentials]
       provider_package = args[:provider_package]
       
-      # host & port are not taken into account if url is set (see issue #7)
-      standard_url = "service:jmx:rmi:///jndi/rmi://#{host}:#{port}/jmxrmi"
-      url = args[:url] || standard_url
+      if args[:command]
+        require 'jdk_helper'
+        url = JDKHelper.find_local_url(args[:command]) or
+          raise "no locally attacheable VMs"
+      else
+        # host & port are not taken into account if url is set (see issue #7)
+        standard_url = "service:jmx:rmi:///jndi/rmi://#{host}:#{port}/jmxrmi"
+        url = args[:url] || standard_url
+      end
       
       unless credentials
         if !username.nil? and username.length > 0
