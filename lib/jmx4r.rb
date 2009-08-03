@@ -18,6 +18,7 @@ module JMX
   require 'dynamic_mbean'
   require 'open_data_helper'
   require 'objectname_helper'
+  require 'jdk_helper'
   require 'jruby'
 
   class MBeanServerConnectionProxy
@@ -145,8 +146,9 @@ module JMX
     #                     not taken into account
     #
     # [:command]          the pattern matches the command line of the local
-    #                     JVM process.
-    #                     (listed as 'local processes' on JConsole).
+    #                     JVM process including the MBean server.
+    #                     (command lines are listed on the connection dialog
+    #                      in JConsole).
     #                     No default.
     #                     this feature needs a JDK (>=5) installed on the local
     #                     system.
@@ -175,7 +177,6 @@ module JMX
       provider_package = args[:provider_package]
       
       if args[:command]
-        require 'jdk_helper'
         url = JDKHelper.find_local_url(args[:command]) or
           raise "no locally attacheable VMs"
       else

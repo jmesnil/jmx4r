@@ -29,6 +29,11 @@ jmx4r helps to manage Java applications using JMX in a simple and powerful way:
   # trigger a Garbage Collection
   memory.gc
 
+  # For local processes not publishing jmxrmi ports, instead:
+
+  # connect to the local JConsole process
+  JMX::MBean.establish_connection :command => /jconsole/i
+
 == Help
 
 * Wiki[http://jmesnil.net/wiki/Jmx4r]

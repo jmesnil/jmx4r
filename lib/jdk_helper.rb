@@ -1,34 +1,31 @@
 
 module JMX
   module JDKHelper
+    include_class 'java.lang.System'
+
     class << self
-      include_class 'java.lang.System'
-
-      def init
-        @helper = nil
-
-        if has_java_class?("com.sun.tools.attach.VirtualMachine")
-          require "jdk/jdk6_helper"
-          @helper = JDK6Helper
-          return
-        end
-
-        if has_java_class?('sun.jvmstat.monitor.MonitoredHost')
-          require "jdk/jdk5_helper"
-          @helper = JDK5Helper
-          return
-        end
-      end
 
       def method_missing(method, *args, &block)
-        unless @helper
-          raise "JDKHelper implementation is not available - \
-            maybe only JREs are installed properly."
-        end
-        @helper.send method, *args, &block
+        init unless @jdk
+        @jdk.send method, *args, &block
       end
 
     private
+
+      def init
+        @jdk =
+          case
+          when has_java_class?("com.sun.tools.attach.VirtualMachine")
+            require "jdk/jdk6"
+            JDK6
+          when has_java_class?('sun.jvmstat.monitor.MonitoredHost')
+            require "jdk/jdk5"
+            JDK5
+          else
+            require "jdk/jdk4"
+            JDK4
+          end
+      end
 
       def has_java_class?(name)
         begin
@@ -67,8 +64,6 @@ module JMX
       end
     end
 
-    self.init
   end
-
 end
 
