@@ -89,7 +89,7 @@ module JMX
       if @operations.keys.include?(method.to_s)
         op_name, param_types = @operations[method.to_s]
         @connection.invoke @object_name,
-                           op_name,
+                           op_name.snake_case,
                            args.to_java(:Object),
                            param_types.to_java(:String)
       else

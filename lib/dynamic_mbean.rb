@@ -3,10 +3,10 @@
 # taken from the 'jmx' gems in jruby-extras
 
 module JMX
-  import javax.management.MBeanParameterInfo
-  import javax.management.MBeanOperationInfo
-  import javax.management.MBeanAttributeInfo
-  import javax.management.MBeanInfo
+  java_import javax.management.MBeanParameterInfo
+  java_import javax.management.MBeanOperationInfo
+  java_import javax.management.MBeanAttributeInfo
+  java_import javax.management.MBeanInfo
 
   # Module that is used to bridge java to ruby and ruby to java types.
   module JavaTypeAware
@@ -99,10 +99,10 @@ module JMX
   # like: user_name= and username.  So in your ruby code you can treat the attributes
   # as "regular" ruby accessors
   class DynamicMBean
-    import javax.management.MBeanOperationInfo
-    import javax.management.MBeanAttributeInfo
-    import javax.management.DynamicMBean
-    import javax.management.MBeanInfo
+    java_import javax.management.MBeanOperationInfo
+    java_import javax.management.MBeanAttributeInfo
+    java_import javax.management.DynamicMBean
+    java_import javax.management.MBeanInfo
     include JMX::JavaTypeAware
   
     #NOTE this will not be needed when JRuby-3164 is fixed.
