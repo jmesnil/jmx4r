@@ -86,8 +86,10 @@ module JMX
     end
 
     def method_missing(method, *args, &block) #:nodoc:
-      if @operations.keys.include?(method.to_s)
-        op_name, param_types = @operations[method.to_s]
+      method_in_snake_case = method.to_s.snake_case # this way Java/JRuby styles are compatible
+
+      if @operations.keys.include?(method_in_snake_case)
+        op_name, param_types = @operations[method_in_snake_case]
         @connection.invoke @object_name,
                            op_name,
                            args.to_java(:Object),
