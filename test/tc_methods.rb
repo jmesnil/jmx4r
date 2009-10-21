@@ -21,4 +21,10 @@ class TestMethods < Test::Unit::TestCase
     assert_equal "FINEST", @logging.get_logger_level("global")
   end
 
+  # make sure we can also use Java name convention
+  def test_invoke_CamelCaseOperation
+    @logging.setLoggerLevel "global", "FINE"
+    assert_equal "FINE", @logging.getLoggerLevel("global")
+  end
+
 end
