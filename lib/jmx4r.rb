@@ -148,7 +148,7 @@ module JMX
     # [:command]          the pattern matches the command line of the local
     #                     JVM process including the MBean server.
     #                     (command lines are listed on the connection dialog
-    #                      in JConsole).
+    #                     in JConsole).
     #                     No default.
     #                     this feature needs a JDK (>=5) installed on the local
     #                     system.
