@@ -1,0 +1,25 @@
+---
+defn:
+  heapMemUsage: &heapMemUsage
+    name: java.lang:type=Memory
+    path:
+      - heap_memory_usage
+      - - committed
+        - used
+hosts:
+  - name: localhost_test
+    connection:
+      # important -- the hash keys below need to start with ":"
+      # this makes them symbols and the connection can handle it...
+      :host: localhost
+      :port: 64850
+    beans:
+      - name: java.lang:type=MemoryPool,name=*
+        path:
+          - collection_usage
+          - - committed
+            - used
+      # This is how to use one of the definitions above
+      - *heapMemUsage
+      # This is how to use an item defined in jmx_alias
+      - :MEMORY_HEAP_INIT
