@@ -124,5 +124,20 @@ class TestDynamicMBean < Test::Unit::TestCase
      assert_raise(NoMethodError){
         bar_mbean.foo_attr = "test"
      }
+
+  def test_get_attributes
+    foo = Foo.new
+    foo.foo_attr = "value"
+
+    object_name = ObjectName.new "jmx4r:name=baz"
+    mbean_server = ManagementFactory.platform_mbean_server
+    mbean_server.register_mbean foo, object_name
+
+    foo_mbean = JMX::MBean.find_by_name object_name.to_s, :connection => mbean_server
+    attrs = mbean_server.get_attributes object_name, ["foo_attr"].to_java(:string)
+    assert_equal foo.foo_attr, attrs[0]
+
+    mbean_server.unregister_mbean object_name
+
   end
 end
