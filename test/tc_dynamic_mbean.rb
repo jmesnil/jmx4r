@@ -24,10 +24,11 @@ class TestDynamicMBean < Test::Unit::TestCase
 
   def test_attribute_types
     mbean = AttributeTypesMBean.new
-    mbeanServer = ManagementFactory.platform_mbean_server
-    mbeanServer.register_mbean mbean, ObjectName.new("jmx4r:name=AttributeTypesMBean")
+    object_name = ObjectName.new "jmx4r:name=AttributeTypesMBean"
+    mbean_server = ManagementFactory.platform_mbean_server
+    mbean_server.register_mbean mbean, object_name
 
-    mbean = JMX::MBean.find_by_name "jmx4r:name=AttributeTypesMBean", :connection => mbeanServer
+    mbean = JMX::MBean.find_by_name object_name.to_s, :connection => mbean_server
     mbean.string_attr = "test"
     assert_equal("test", mbean.string_attr)
 
@@ -57,6 +58,8 @@ class TestDynamicMBean < Test::Unit::TestCase
 
     mbean.boolean_attr = true
     assert_equal(true, mbean.boolean_attr)
+
+    mbean_server.unregister_mbean object_name
   end
 
   class OperationInvocationMBean < JMX::DynamicMBean
@@ -70,11 +73,14 @@ class TestDynamicMBean < Test::Unit::TestCase
 
   def test_operation_invocation
     mbean = OperationInvocationMBean.new
-    mbeanServer = ManagementFactory.platform_mbean_server
-    mbeanServer.register_mbean mbean, ObjectName.new("jmx4r:name=OperationInvocationMBean")
+    object_name = ObjectName.new "jmx4r:name=OperationInvocationMBean"
+    mbean_server = ManagementFactory.platform_mbean_server
+    mbean_server.register_mbean mbean, object_name
 
-    mbean = JMX::MBean.find_by_name "jmx4r:name=OperationInvocationMBean", :connection => mbeanServer
+    mbean = JMX::MBean.find_by_name object_name.to_s, :connection => mbean_server
     assert_equal("oof", mbean.reverse("foo"))
+
+    mbean_server.unregister_mbean object_name
   end
 
   class Foo < JMX::DynamicMBean
@@ -101,10 +107,12 @@ class TestDynamicMBean < Test::Unit::TestCase
 
   def test_separate_dynamic_beans_have_separate_operations_and_attributes
      mbean_server = ManagementFactory.platform_mbean_server
-     mbean_server.register_mbean Foo.new, ObjectName.new("jmx4r:name=foo")
-     mbean_server.register_mbean Bar.new, ObjectName.new("jmx4r:name=bar")
+     foo_object_name = ObjectName.new "jmx4r:name=foo"
+     bar_object_name = ObjectName.new "jmx4r:name=bar"
+     mbean_server.register_mbean Foo.new, foo_object_name
+     mbean_server.register_mbean Bar.new, bar_object_name
 
-     foo_mbean = JMX::MBean.find_by_name "jmx4r:name=foo", :connection => mbean_server
+     foo_mbean = JMX::MBean.find_by_name foo_object_name.to_s, :connection => mbean_server
      assert_equal "foo test", foo_mbean.foo("test")
      assert_raise(NoMethodError){
         foo_mbean.bar("test")
@@ -114,7 +122,7 @@ class TestDynamicMBean < Test::Unit::TestCase
      assert_raise(NoMethodError){
         foo_mbean.bar_attr = "test"
      }
-     bar_mbean = JMX::MBean.find_by_name "jmx4r:name=bar", :connection => mbean_server
+     bar_mbean = JMX::MBean.find_by_name bar_object_name.to_s, :connection => mbean_server
      assert_equal "bar test", bar_mbean.bar("test")
      assert_raise(NoMethodError) {
         bar_mbean.foo("test")
@@ -124,6 +132,10 @@ class TestDynamicMBean < Test::Unit::TestCase
      assert_raise(NoMethodError){
         bar_mbean.foo_attr = "test"
      }
+
+     mbean_server.unregister_mbean foo_object_name
+     mbean_server.unregister_mbean bar_object_name
+  end
 
   def test_get_attributes
     foo = Foo.new
