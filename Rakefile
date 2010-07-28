@@ -6,7 +6,7 @@ require "rubygems"
 
 dir     = File.dirname(__FILE__)
 lib     = File.join(dir, "lib", "jmx4r.rb")
-version = "0.1.1"
+version = "0.1.2"
 
 task :default => [:test]
 
