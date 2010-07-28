@@ -252,7 +252,7 @@ module JMX
   
     def getAttributes(attributes)
       attrs = javax.management.AttributeList.new
-      attributes.each { |attribute| attrs.add(getAttribute(attribute)) }
+      attributes.each { |attribute| attrs.add send("jmx_get_"+attribute.downcase) }
       attrs
     end
   

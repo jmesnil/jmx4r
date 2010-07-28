@@ -8,6 +8,7 @@ class TestDynamicMBean < Test::Unit::TestCase
 
   import java.lang.management.ManagementFactory
   import javax.management.ObjectName
+  import javax.management.Attribute
 
   class AttributeTypesMBean < JMX::DynamicMBean
     rw_attribute :string_attr, :string, "a String attribute"
@@ -147,7 +148,8 @@ class TestDynamicMBean < Test::Unit::TestCase
 
     foo_mbean = JMX::MBean.find_by_name object_name.to_s, :connection => mbean_server
     attrs = mbean_server.get_attributes object_name, ["foo_attr"].to_java(:string)
-    assert_equal foo.foo_attr, attrs[0]
+    assert attrs[0].kind_of? Attribute
+    assert_equal foo.foo_attr, attrs[0].value
 
     mbean_server.unregister_mbean object_name
 
