@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'jmx4r'
-require 'active_support'
 require 'pp'
 require 'jmx_alias'
 require 'jmx_walker'
@@ -8,6 +7,8 @@ require 'jmx_walker'
 
 # This example jmx monitor uses a yaml config file to obtain information from 
 # one or more beans from one or more jvms
+# run with
+# $ jruby -Ilib -J-Dcom.sun.management.jmxremote -J-Dcom.sun.management.jmxremote.port=64850 -J-Dcom.sun.management.jmxremote.ssl=false -J-Dcom.sun.management.jmxremote.authenticate=false examples/jmx_mon.rb  examples/jmx_mon.yml
 
 begin
   config=YAML.load_file(ARGV[0])
@@ -25,7 +26,6 @@ config["hosts"].each do |host|
 
     # now step through each bean in turn
     host["beans"].each do |bean|
-      pp bean
       case
         when bean.instance_of?(Symbol)
           puts JMX::Alias[bean] # not sure here

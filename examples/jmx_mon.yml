@@ -6,6 +6,7 @@ defn:
       - heap_memory_usage
       - - committed
         - used
+        - max
 hosts:
   - name: localhost_test
     connection:
@@ -22,4 +23,4 @@ hosts:
       # This is how to use one of the definitions above
       - *heapMemUsage
       # This is how to use an item defined in jmx_alias
-      - :MEMORY_HEAP_INIT
+      - :MEMORY_HEAP_MAX
