@@ -1,7 +1,5 @@
 require 'rubygems'
 require 'jmx4r'
-require 'active_support'
-
 
 # create aliases for common JMX beans
 # TODO: MemoryManager, MemoryPool, Logger
@@ -82,7 +80,7 @@ module JMX
       begin
         @bean = JMX::MBean.find_by_name bean_path.shift
         until bean_path.empty?
-          curr=bean_path.shift.underscore
+          curr=bean_path.shift.snake_case
           @bean = @bean.respond_to?(:keys) ? @bean[curr] : @bean.send(curr)
         end
 
