@@ -12,6 +12,14 @@ class String
     tr("-", "_").
     downcase
   end
+  
+  # Transform a snake_case String to a camelCase String with a lowercase initial.
+  #--
+  # Code has been taken from ActiveSupport
+  def camel_case
+    name = gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+    name[0].chr.downcase + name[1..-1]
+  end
 end
 
 module JMX

@@ -39,6 +39,25 @@ class TestCompositeData < Test::Unit::TestCase
     assert @heap.member?("used")
   end
   
+  def test_composite_data_method_missing
+    assert @heap.used
+    
+    def @heap.containsKey(key)
+      "camelCaseAttributeName" == key
+    end
+
+    def @heap.get(key)
+      return "value" if "camelCaseAttributeName" == key
+      raise("should not happen")
+    end
+    
+    assert_equal "value", @heap.camel_case_attribute_name
+    
+    assert_raises NoMethodError do
+      @heap.unknown_attribute
+    end
+  end
+  
   def test_composite_data_as_hash
     used = @heap.get "used"
     used_from_hash = @heap["used"]

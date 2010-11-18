@@ -27,6 +27,16 @@ JavaUtilities.extend_proxy('javax.management.openmbean.CompositeDataSupport') do
   def [](key)
     self.get key
   end
+  
+  def method_missing(name, *args)
+    key = name.to_s.camel_case
+    super unless containsKey(key)
+    get(name.to_s.camel_case)
+  end
+  
+  def respond_to?(symbol, include_private = false)
+    containsKey(symbol.to_s.camel_case) || super
+  end
 end
 
 JavaUtilities.extend_proxy('javax.management.openmbean.TabularDataSupport') do
