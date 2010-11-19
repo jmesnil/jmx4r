@@ -4,7 +4,7 @@
 # regular (read-only) Ruby Hash
 require 'java'
 
-JavaUtilities.extend_proxy('javax.management.openmbean.CompositeDataSupport') do
+JavaUtilities.extend_proxy('javax.management.openmbean.CompositeData') do
   include Enumerable
   def each
     self.get_composite_type.key_set.each do |k|
@@ -39,7 +39,7 @@ JavaUtilities.extend_proxy('javax.management.openmbean.CompositeDataSupport') do
   end
 end
 
-JavaUtilities.extend_proxy('javax.management.openmbean.TabularDataSupport') do
+JavaUtilities.extend_proxy('javax.management.openmbean.TabularData') do
   include Enumerable
   def each
     self.values.each do |value|
