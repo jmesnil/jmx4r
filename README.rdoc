@@ -37,7 +37,7 @@ jmx4r helps to manage Java applications using JMX in a simple and powerful way:
 == Help
 
 * Wiki[http://jmesnil.net/wiki/Jmx4r]
-* RDoc[http://jmx4r.rubyforge.org/doc/]
+* RDoc[http://rubydoc.info/gems/jmx4r/frames]
  
 == Source Code
 
