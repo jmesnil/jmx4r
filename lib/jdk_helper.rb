@@ -1,7 +1,7 @@
 
 module JMX
   module JDKHelper
-    include_class 'java.lang.System'
+    java_import java.lang.System
 
     class << self
 
@@ -29,7 +29,7 @@ module JMX
 
       def has_java_class?(name)
         begin
-          include_class name
+          java_import name
           true
         rescue
           retry if load_tools_jar

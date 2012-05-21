@@ -55,13 +55,13 @@ module JMX
   end
 
   class MBean
-    include_class 'java.util.HashMap'
-    include_class 'javax.naming.Context'
-    include_class 'javax.management.Attribute'
-    include_class 'javax.management.ObjectName'
-    include_class 'javax.management.remote.JMXConnector'
-    include_class 'javax.management.remote.JMXConnectorFactory'
-    include_class 'javax.management.remote.JMXServiceURL'
+    java_import java.util.HashMap
+    java_import javax.naming.Context
+    java_import javax.management.Attribute
+    java_import javax.management.ObjectName
+    java_import javax.management.remote.JMXConnector
+    java_import javax.management.remote.JMXConnectorFactory
+    java_import javax.management.remote.JMXServiceURL
     JThread = java.lang.Thread
 
     attr_reader :object_name, :operations, :attributes, :connection

@@ -2,7 +2,7 @@
 module JMX
   module JDKHelper
     module JDK6
-      include_class 'com.sun.tools.attach.VirtualMachine'
+      java_import com.sun.tools.attach.VirtualMachine
 
       class << self
         def find_local_url(command_pattern)
