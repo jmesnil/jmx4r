@@ -2,11 +2,11 @@
 module JMX
   module JDKHelper
     module JDK5
-      include_class 'sun.jvmstat.monitor.HostIdentifier'
-      include_class 'sun.jvmstat.monitor.MonitoredHost'
-      include_class 'sun.jvmstat.monitor.MonitoredVmUtil'
-      include_class 'sun.jvmstat.monitor.VmIdentifier'
-      include_class 'sun.management.ConnectorAddressLink'
+      java_import sun.jvmstat.monitor.HostIdentifier
+      java_import sun.jvmstat.monitor.MonitoredHost
+      java_import sun.jvmstat.monitor.MonitoredVmUtil
+      java_import sun.jvmstat.monitor.VmIdentifier
+      java_import sun.management.ConnectorAddressLink
 
       class << self
 
