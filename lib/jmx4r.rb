@@ -101,11 +101,36 @@ module JMX
         op_name, param_types = @operations[method_in_snake_case]
         @connection.invoke @object_name,
                            op_name,
-                           args.to_java(:Object),
+                           java_args(param_types, args),
                            param_types.to_java(:String)
       else
         super
       end
+    end
+
+    # Given the parameter types and parameters supplied do these signatures match?
+    # Repackage these parameters as Java objects in a primitive object array.
+    def java_args(param_types, params)
+      return nil if params.nil?
+
+      jargs = []
+      params.each_with_index do |param, i|
+        type = param_types[i]
+        required_type = JavaClass.for_name(type)
+        java_arg = param.to_java(:object)
+        java_arg = param.to_java(Java::java.lang.Integer) if required_type.name == "int"
+
+        if (param.kind_of? Array)
+          java_arg = param.inject(ArrayList.new) {|l, element| l << element }
+        end
+
+        jargs << java_arg
+
+        arg_type = java_arg.java_class
+
+        raise TypeError.new("parameter #{signature[i].name} expected to be #{required_type}, but was #{arg_type}") if !required_type.assignable_from? arg_type
+      end
+      jargs.to_java
     end
 
     @@connection = nil
