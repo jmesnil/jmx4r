@@ -116,7 +116,7 @@ module JMX
       jargs = []
       params.each_with_index do |param, i|
         type = param_types[i]
-        required_type = JavaClass.for_name(type)
+        required_type = Java::JavaClass.for_name(type)
         java_arg = param.to_java(:object)
         java_arg = param.to_java(Java::java.lang.Integer) if required_type.name == "int"
 
