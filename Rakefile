@@ -49,7 +49,7 @@ spec = Gem::Specification.new do |spec|
   spec.author            = "Jeff Mesnil"
   spec.email             = "jmesnil@gmail.com"
   spec.rubyforge_project = "jmx4r"
-  spec.homepage          = "http://jmesnil.net/wiki/Jmx4r"
+  spec.homepage          = "http://github.com/jmesnil/jmx4r"
   spec.description       = <<END_DESC
 jmx4r is a JMX library for JRuby
 END_DESC
