@@ -181,17 +181,20 @@ module JMX
       end
     end
 
-    def self.define_jmx_getter(name, type)
+    def self.define_jmx_getter(name, type, access_proc=nil)
       define_method("jmx_get_#{name.to_s.downcase}") do
-        begin
-          #attempt conversion
+
+        value = self.send(name)
+        #attempt conversion
+        converted_value = begin
           java_type = to_java_type(type)
-          value = eval "#{java_type}.new(@#{name.to_s})"
+          # we eval just to get the class object
+          (eval "java_type").new(value)
         rescue
           #otherwise turn it into a java Object type for now.
-          value = eval "Java.ruby_to_java(@#{name.to_s})"
+          Java.ruby_to_java(value)
         end
-        attribute = javax.management.Attribute.new(name.to_s, value)
+        attribute = javax.management.Attribute.new(name.to_s, converted_value)
       end
     end
 

@@ -21,6 +21,9 @@ class TestDynamicMBean < Test::Unit::TestCase
     rw_attribute :map_attr, :map, "a Map attribute"
     rw_attribute :set_attr, :set, "a Set attribute"
     rw_attribute :boolean_attr, :boolean, "a Boolean attribute"
+
+    r_attribute :method_backed_attr, :string, 'Method backed attribute'
+    def method_backed_attr ; 'Not an instance variable' ; end
   end
 
   def test_attribute_types
@@ -59,6 +62,9 @@ class TestDynamicMBean < Test::Unit::TestCase
 
     mbean.boolean_attr = true
     assert_equal(true, mbean.boolean_attr)
+
+    # assers that overridden attr_reader is used
+    assert_equal "Not an instance variable", mbean.method_backed_attr
 
     mbean_server.unregister_mbean object_name
   end
