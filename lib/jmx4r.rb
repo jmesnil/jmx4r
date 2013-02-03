@@ -163,6 +163,9 @@ module JMX
     #                     if the command is specified, the host & port or the url
     #                     parameters are not taken into account
     #
+    # [:pid]              Connect to a local VM by pid (process id).  Works
+    #                     similarly to the :command options.
+    #
     # [:username]         the name of the user (if the MBean server requires authentication).
     #                     No default
     #
@@ -183,23 +186,26 @@ module JMX
       password = args[:password]
       credentials = args[:credentials]
       provider_package = args[:provider_package]
-      
+
       if args[:command]
         url = JDKHelper.find_local_url(args[:command]) or
           raise "no locally attacheable VMs"
+      elsif args[:pid]
+        url = JDKHelper.find_local_url_by_pid(args[:pid]) or
+          raise "no attachable VM with pid #{args[:pid]}"
       else
         # host & port are not taken into account if url is set (see issue #7)
         standard_url = "service:jmx:rmi:///jndi/rmi://#{host}:#{port}/jmxrmi"
         url = args[:url] || standard_url
       end
-      
+
       unless credentials
         if !username.nil? and username.length > 0
           user_password_credentials = [username, password]
           credentials = user_password_credentials.to_java(:String)
         end
       end
-      
+
       env = HashMap.new
       env.put(JMXConnector::CREDENTIALS, credentials) if credentials
       # only fill the Context and JMXConnectorFactory properties if provider_package is set

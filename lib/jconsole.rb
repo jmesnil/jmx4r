@@ -17,11 +17,14 @@ module JConsole
   # [:pwd_file]    the path to the file containing the authentication credentials
   # [:access_file] the path to the file containing the authorization credentials
   #
-  # The file path corresponding to :pwd_file must have <b>600 permission</b> 
+  # The file path corresponding to :pwd_file must have <b>600 permission</b>
   # (<tt>chmod 600 jmxremote.password</tt>).
-  # 
-  # Both <tt>:pwd_file</tt> and <tt>:access_file+</tt> must be specified to run a secure 
+  #
+  # Both <tt>:pwd_file</tt> and <tt>:access_file+</tt> must be specified to run a secure
   # jconsole (see {JMX password & access files}[http://java.sun.com/j2se/1.5.0/docs/guide/management/agent.html#PasswordAccessFiles])
+  #
+  # Returns the process id of the jconsole process
+  #
   def JConsole.start(args={})
     port = args[:port] || 3000
     pwd_file = args[:pwd_file]

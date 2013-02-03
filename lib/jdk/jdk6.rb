@@ -15,6 +15,16 @@ module JMX
           end
         end
 
+        def find_local_url_by_pid(pid)
+          target_vmd = VirtualMachine.list.find do |vmd|
+            pid.to_s == vmd.id.to_s
+          end
+
+          if target_vmd
+            local_connector_address(target_vmd)
+          end
+        end
+
       private
 
         def local_connector_address(vm_descriptor)
