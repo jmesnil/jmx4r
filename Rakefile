@@ -1,8 +1,7 @@
 require "rake/testtask"
-require "rake/rdoctask"
-require "rake/gempackagetask"
-
+require "rdoc/task"
 require "rubygems"
+require "rubygems/package_task"
 
 dir     = File.dirname(__FILE__)
 lib     = File.join(dir, "lib", "jmx4r.rb")
@@ -55,7 +54,7 @@ jmx4r is a JMX library for JRuby
 END_DESC
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
 end

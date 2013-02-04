@@ -6,19 +6,20 @@ require "jmx4r"
 require "jconsole"
 
 class TestConnection < Test::Unit::TestCase
+  import java.io.IOException
 
   def teardown
     JMX::MBean.remove_connection
   end
 
   def test_establish_connection_with_bad_port
-    assert_raise(NativeException) { 
+    assert_raise(IOException) { 
       JMX::MBean.establish_connection :port => 9999
     }
   end
 
   def test_establish_connection_with_bad_host
-    assert_raise(NativeException) { 
+    assert_raise(IOException) { 
       JMX::MBean.establish_connection :host => "not a valid host"
     }
   end
@@ -38,7 +39,7 @@ class TestConnection < Test::Unit::TestCase
       JConsole::start
       connection = JMX::MBean.establish_connection
       JMX::MBean.remove_connection
-      assert_raise(NativeException) {
+      assert_raise(IOException) {
         connection.getMBeanCount
       }
     ensure

@@ -7,7 +7,8 @@ require "jconsole"
 
 class TestCompositeData < Test::Unit::TestCase
   import java.lang.management.ManagementFactory
-
+  import javax.management.openmbean.InvalidKeyException
+  
   def setup
     memory = JMX::MBean.find_by_name "java.lang:type=Memory", :connection => ManagementFactory.platform_mbean_server
     # heap_memory_usage is a CompositeData
@@ -71,6 +72,6 @@ class TestCompositeData < Test::Unit::TestCase
   
   def test_composite_data_as_hash_with_unknown_key
     assert_equal false, @heap.key?("unknown")
-    assert_raise(NativeException) { @heap["unknown"] }
+    assert_raise(InvalidKeyException) { @heap["unknown"] }
   end
 end

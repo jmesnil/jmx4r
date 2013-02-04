@@ -6,6 +6,7 @@ require "jmx4r"
 require "jconsole"
 
 class TestAuthentication < Test::Unit::TestCase
+  import java.lang.SecurityException
 
   def setup
     @username = "jmx4r.user"
@@ -50,19 +51,19 @@ class TestAuthentication < Test::Unit::TestCase
   end
 
   def test_establish_auth_connection_with_invalid_username
-    assert_raise(NativeException) {
+    assert_raise(SecurityException) {
       JMX::MBean.establish_connection :username => "invalid user name", :password => @password
     }
   end
 
   def test_establish_auth_connection_with_invalid_password
-    assert_raise(NativeException) {
+    assert_raise(SecurityException) {
       JMX::MBean.establish_connection :username => @username, :password => "invalid password" 
     }
   end
 
   def test_establish_auth_connection_with_no_credentials
-    assert_raise(NativeException) {
+    assert_raise(SecurityException) {
       JMX::MBean.establish_connection
     }
   end
