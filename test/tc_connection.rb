@@ -89,4 +89,14 @@ class TestConnection < Test::Unit::TestCase
     end
   end
 
+  def test_establish_connection_local_with_pid
+    begin
+      pid = JConsole::start
+      connection = JMX::MBean.establish_connection :pid => pid
+      assert(connection.getMBeanCount > 0)
+    ensure
+      JConsole::stop
+    end
+  end
+
 end

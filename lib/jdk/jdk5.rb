@@ -26,6 +26,11 @@ module JMX
           nil
         end
 
+        def find_local_url_by_pid(pid)
+          # TODO this should be possible, right?
+          raise NotImplementedError
+        end
+
       end
 
     end

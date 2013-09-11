@@ -147,25 +147,11 @@ module JMX
       description ||= name.to_s
       attributes << JMX::Attribute.new(name, type, description, true, true).to_jmx
       attr_accessor name
-      #create a "java" oriented accessor method
-      define_method("jmx_get_#{name.to_s.downcase}") do
-        begin
-          #attempt conversion
-          java_type = to_java_type(type)
-          value = eval "#{java_type}.new(@#{name.to_s})"
-        rescue
-          #otherwise turn it into a java Object type for now.
-          value = eval "Java.ruby_to_java(@#{name.to_s})"
-        end
-        attribute = javax.management.Attribute.new(name.to_s, value)
-      end
-  
-      define_method("jmx_set_#{name.to_s.downcase}") do |value|
-        blck = to_ruby(type)
-        send "#{name.to_s}=", blck.call(value)
-      end
+
+      define_jmx_getter(name, type)
+      define_jmx_setter(name, type)
     end
-  
+
     # the <tt>r_attribute</tt> method is used to declare a JMX read only attribute.
     # see the +JavaSimpleTypes+ module for more information about acceptable types
     # usage:
@@ -173,20 +159,10 @@ module JMX
     def self.r_attribute(name, type, description)
       attributes << JMX::Attribute.new(name, type, description, true, false).to_jmx
       attr_reader name
-      #create a "java" oriented accessor method
-      define_method("jmx_get_#{name.to_s.downcase}") do
-        begin
-          #attempt conversion
-          java_type = to_java_type(type)
-          value = eval "#{java_type}.new(@#{name.to_s})"
-        rescue
-          #otherwise turn it into a java Object type for now.
-          value = eval "Java.ruby_to_java(@#{name.to_s})"
-        end
-        attribute = javax.management.Attribute.new(name.to_s, value)
-      end
+
+      define_jmx_getter(name, type)
     end
-  
+
     # the <tt>w_attribute</tt> method is used to declare a JMX write only attribute.
     # see the +JavaSimpleTypes+ module for more information about acceptable types
     # usage:
@@ -194,12 +170,35 @@ module JMX
     def self.w_attribute(name, type, description)
       attributes << JMX::Attribute.new(name, type, description, false, true).to_jmx
       attr_writer name
+
+      define_jmx_setter(name, type)
+    end
+
+    def self.define_jmx_setter(name, type)
       define_method("jmx_set_#{name.to_s.downcase}") do |value|
         blck = to_ruby(type)
-        eval "@#{name.to_s} = #{blck.call(value)}"
+        send "#{name.to_s}=", blck.call(value)
       end
     end
-  
+
+    def self.define_jmx_getter(name, type, access_proc=nil)
+      define_method("jmx_get_#{name.to_s.downcase}") do
+
+        value = self.send(name)
+        #attempt conversion
+        converted_value = begin
+          java_type = to_java_type(type)
+          # we eval just to get the class object
+          (eval "java_type").new(value)
+        rescue
+          #otherwise turn it into a java Object type for now.
+          Java.ruby_to_java(value)
+        end
+        attribute = javax.management.Attribute.new(name.to_s, converted_value)
+      end
+    end
+
+
     # Use the operation method to declare the start of an operation
     # It takes as an optional argument the description for the operation
     # Example:
