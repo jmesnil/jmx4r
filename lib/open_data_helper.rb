@@ -19,21 +19,21 @@ JavaUtilities.extend_proxy('javax.management.openmbean.CompositeData') do
   alias has_key? key?
   alias include? key?
   alias member? key?
-  
+
   def keys
     self.get_composite_type.key_set
   end
-  
+
   def [](key)
     self.get key
   end
-  
+
   def method_missing(name, *args)
     key = name.to_s.camel_case
     super unless containsKey(key)
     get(name.to_s.camel_case)
   end
-  
+
   def respond_to?(symbol, include_private = false)
     containsKey(symbol.to_s.camel_case) || super
   end

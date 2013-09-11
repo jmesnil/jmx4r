@@ -10,11 +10,11 @@ JavaUtilities.extend_proxy('javax.management.ObjectName') do
   alias has_key? key?
   alias include? key?
   alias member? key?
-  
+
   def keys
     self.get_key_property_list.key_set
   end
-  
+
   def [](key)
     self.get_key_property key
   end

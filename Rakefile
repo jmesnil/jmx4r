@@ -1,7 +1,7 @@
-require "rake/testtask"
-require "rdoc/task"
 require "rubygems"
-require "rubygems/package_task"
+require "rdoc/task"
+require "rake/testtask"
+require 'bundler/gem_tasks'
 
 dir     = File.dirname(__FILE__)
 lib     = File.join(dir, "lib", "jmx4r.rb")
@@ -28,35 +28,6 @@ desc "Publish current documentation to Rubyforge"
 task :publish_docs => [:rdoc] do
   sh "scp -r doc/html/* " +
      "jmesnil@rubyforge.org:/var/www/gforge-projects/jmx4r/doc/"
-end
-
-spec = Gem::Specification.new do |spec|
-  spec.name     = "jmx4r"
-  spec.version  = version 
-  spec.platform = Gem::Platform::RUBY
-  spec.summary  = "jmx4r is a JMX library for JRuby"
-  spec.files    = Dir.glob("{examples,lib,test}/**/*.rb") + ["Rakefile"]
-
-  spec.test_files       =  "test/ts_all.rb"
-  spec.has_rdoc         =  true
-  spec.extra_rdoc_files =  %w{README.rdoc LICENSE.txt}
-  spec.rdoc_options     << '--title' << 'jmx4r Documentation' <<
-                           '--main'  << 'README.rdoc'
-
-  spec.require_path      = 'lib'
-
-  spec.author            = "Jeff Mesnil"
-  spec.email             = "jmesnil@gmail.com"
-  spec.rubyforge_project = "jmx4r"
-  spec.homepage          = "http://github.com/jmesnil/jmx4r"
-  spec.description       = <<END_DESC
-jmx4r is a JMX library for JRuby
-END_DESC
-end
-
-Gem::PackageTask.new(spec) do |pkg|
-  pkg.need_zip = true
-  pkg.need_tar = true
 end
 
 desc "Show library's code statistics"
