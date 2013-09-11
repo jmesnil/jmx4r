@@ -12,7 +12,7 @@ class String
     tr("-", "_").
     downcase
   end
-  
+
   # Transform a snake_case String to a camelCase String with a lowercase initial.
   #--
   # Code has been taken from ActiveSupport
@@ -77,7 +77,7 @@ module JMX
     #
     # object_name:: a string corresponding to a valid ObjectName
     # connection::  a connection to a MBean server. If none is passed,
-    #               use the global connection created by 
+    #               use the global connection created by
     #               MBean.establish_connection
     def initialize(object_name, connection=nil)
       @connection = connection || @@connection
@@ -112,12 +112,12 @@ module JMX
 
     # establish a connection to a remote MBean server which will
     # be used by all subsequent MBeans.
-    # 
+    #
     # See MBean.create_connection for a list of the keys that are
     # accepted in arguments.
     #
     # Examples
-    # 
+    #
     #   JMX::MBean.establish_connection :port => "node23", :port => 1090
     #   JMX::MBean.establish_connection :port => "node23", :username => "jeff", :password => "secret"
     #   JMX::MBean.establish_connection :command => /jconsole/i
@@ -141,7 +141,7 @@ module JMX
     end
 
     # Create a connection to a remote MBean server.
-    # 
+    #
     # The args accepts the following keys:
     #
     # [:host]             the host of the MBean server (defaults to "localhost")
@@ -171,7 +171,7 @@ module JMX
     #
     # [:credentials]      custom credentials (if the MBean server requires authentication).
     #                     No default. It has precedence over :username and :password (i.e. if
-    #                     :credentials is specified, :username & :password are ignored)   
+    #                     :credentials is specified, :username & :password are ignored)
     #
     # [:provider_package] use to fill the JMXConnectorFactory::PROTOCOL_PROVIDER_PACKAGES.
     #                     No default
@@ -183,7 +183,7 @@ module JMX
       password = args[:password]
       credentials = args[:credentials]
       provider_package = args[:provider_package]
-      
+
       if args[:command]
         url = JDKHelper.find_local_url(args[:command]) or
           raise "no locally attacheable VMs"
@@ -192,14 +192,14 @@ module JMX
         standard_url = "service:jmx:rmi:///jndi/rmi://#{host}:#{port}/jmxrmi"
         url = args[:url] || standard_url
       end
-      
+
       unless credentials
         if !username.nil? and username.length > 0
           user_password_credentials = [username, password]
           credentials = user_password_credentials.to_java(:String)
         end
       end
-      
+
       env = HashMap.new
       env.put(JMXConnector::CREDENTIALS, credentials) if credentials
       # only fill the Context and JMXConnectorFactory properties if provider_package is set
@@ -210,13 +210,13 @@ module JMX
       end
 
       # the context class loader is set to JRuby's classloader when
-      # creating the JMX Connection so that classes loaded using 
-      # JRuby "require" (and not from its classpath) can also be 
+      # creating the JMX Connection so that classes loaded using
+      # JRuby "require" (and not from its classpath) can also be
       # accessed (see issue #6)
       begin
         context_class_loader = JThread.current_thread.context_class_loader
         JThread.current_thread.context_class_loader = JRuby.runtime.getJRubyClassLoader
-        
+
         connector = JMXConnectorFactory::connect JMXServiceURL.new(url), env
         MBeanServerConnectionProxy.new connector
       ensure
@@ -226,10 +226,10 @@ module JMX
     end
 
     # Returns an array of MBeans corresponding to all the MBeans
-    # registered for the ObjectName passed in parameter (which may be 
+    # registered for the ObjectName passed in parameter (which may be
     # a pattern).
     #
-    # The args accepts the same keys than #create_connection and an 
+    # The args accepts the same keys than #create_connection and an
     # additional one:
     #
     # [:connection] a MBean server connection (as returned by #create_connection)

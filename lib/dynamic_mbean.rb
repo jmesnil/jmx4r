@@ -104,16 +104,16 @@ module JMX
     java_import javax.management.DynamicMBean
     java_import javax.management.MBeanInfo
     include JMX::JavaTypeAware
-  
+
     #NOTE this will not be needed when JRuby-3164 is fixed.
     def self.inherited(cls)
       cls.send(:include, DynamicMBean)
     end
-    
+
     def self.mbean_attributes
       @mbean_attributes ||= {}
     end
-  
+
     # TODO: preserve any original method_added?
     # TODO: Error handling here when it all goes wrong?
     def self.method_added(name) #:nodoc:
@@ -122,15 +122,15 @@ module JMX
       operations << self.mbean_attributes[:op].to_jmx
       self.mbean_attributes[:op] = nil
     end
-  
+
     def self.attributes #:nodoc:
       self.mbean_attributes[:attrs] ||= []
     end
-  
+
     def self.operations #:nodoc:
       self.mbean_attributes[:ops] ||= []
     end
-  
+
     # the <tt>rw_attribute</tt> method is used to declare a JMX read write attribute.
     # see the +JavaSimpleTypes+ module for more information about acceptable types
     # usage:
@@ -159,13 +159,13 @@ module JMX
         end
         attribute = javax.management.Attribute.new(name.to_s, value)
       end
-  
+
       define_method("jmx_set_#{name.to_s.downcase}") do |value|
         blck = to_ruby(type)
         send "#{name.to_s}=", blck.call(value)
       end
     end
-  
+
     # the <tt>r_attribute</tt> method is used to declare a JMX read only attribute.
     # see the +JavaSimpleTypes+ module for more information about acceptable types
     # usage:
@@ -186,7 +186,7 @@ module JMX
         attribute = javax.management.Attribute.new(name.to_s, value)
       end
     end
-  
+
     # the <tt>w_attribute</tt> method is used to declare a JMX write only attribute.
     # see the +JavaSimpleTypes+ module for more information about acceptable types
     # usage:
@@ -199,7 +199,7 @@ module JMX
         eval "@#{name.to_s} = #{blck.call(value)}"
       end
     end
-  
+
     # Use the operation method to declare the start of an operation
     # It takes as an optional argument the description for the operation
     # Example:
@@ -213,7 +213,7 @@ module JMX
       # Wait to error check until method_added so we can know method name
       self.mbean_attributes[:op] = JMX::Operation.new description
     end
-  
+
     # Used to declare a parameter (you can declare more than one in succession) that
     # is associated with the currently declared operation.
     # The type is mandatory, the name and description are optional.
@@ -226,7 +226,7 @@ module JMX
     def self.parameter(type, name=nil, description=nil)
       self.mbean_attributes[:op].parameters << JMX::Parameter.new(type, name, description)
     end
-  
+
     # Used to declare the return type of the operation
     #     operation "Used to update the name of a service"
     #     parameter :string, "name", "Set the new name of the service"
@@ -237,42 +237,41 @@ module JMX
     def self.returns(type)
       self.mbean_attributes[:op].return_type = type
     end
-  
+
     def initialize(description="")
       name = self.class.to_s
       operations = self.class.operations.to_java(MBeanOperationInfo)
       attributes = self.class.attributes.to_java(MBeanAttributeInfo)
       @info = MBeanInfo.new name, description, attributes, nil, operations, nil
     end
-  
+
     # Retrieve the value of the requested attribute
     def getAttribute(attribute)
       send("jmx_get_"+attribute.downcase).value
     end
-  
+
     def getAttributes(attributes)
       attrs = javax.management.AttributeList.new
       attributes.each { |attribute| attrs.add send("jmx_get_"+attribute.downcase) }
       attrs
     end
-  
+
     def getMBeanInfo; @info; end
-  
+
     def invoke(actionName, params=nil, signature=nil)
       send(actionName, *params)
     end
-  
+
     def setAttribute(attribute)
       send("jmx_set_#{attribute.name.downcase}", attribute.value)
     end
-  
+
     def setAttributes(attributes)
       attributes.each { |attribute| setAttribute attribute}
     end
-  
+
     def to_s; toString; end
     def inspect; toString; end
     def toString; "#@info.class_name: #@info.description"; end
   end
-  
 end
