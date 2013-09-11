@@ -152,10 +152,10 @@ module JMX
         begin
           #attempt conversion
           java_type = to_java_type(type)
-          value = eval "#{java_type}.new(@#{name.to_s})"
+          value = java_type.new(instance_variable_get("@#{name.to_s}".to_sym))
         rescue
           #otherwise turn it into a java Object type for now.
-          value = eval "Java.ruby_to_java(@#{name.to_s})"
+          value = Java.ruby_to_java(instance_variable_get("@#{name.to_s}".to_sym))
         end
         attribute = javax.management.Attribute.new(name.to_s, value)
       end
@@ -178,10 +178,10 @@ module JMX
         begin
           #attempt conversion
           java_type = to_java_type(type)
-          value = eval "#{java_type}.new(@#{name.to_s})"
+          value = java_type.new(instance_variable_get("@#{name.to_s}".to_sym))
         rescue
           #otherwise turn it into a java Object type for now.
-          value = eval "Java.ruby_to_java(@#{name.to_s})"
+          value = Java.ruby_to_java(instance_variable_get("@#{name.to_s}".to_sym))
         end
         attribute = javax.management.Attribute.new(name.to_s, value)
       end
@@ -195,8 +195,8 @@ module JMX
       attributes << JMX::Attribute.new(name, type, description, false, true).to_jmx
       attr_writer name
       define_method("jmx_set_#{name.to_s.downcase}") do |value|
-        blck = to_ruby(type)
-        eval "@#{name.to_s} = #{blck.call(value)}"
+        blk = to_ruby(type)
+        instance_variable_set("@#{name.to_s}".to_sym, blk.call(value))
       end
     end
 
